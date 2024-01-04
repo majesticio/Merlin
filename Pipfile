@@ -5,7 +5,10 @@ name = "pypi"
 
 [packages]
 sounddevice = "*"
+numpy = "*"
 keyboard = "*"
+python-dotenv = "*"
+pyloudnorm = "*"
 
 [dev-packages]
 
