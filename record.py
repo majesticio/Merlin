@@ -13,7 +13,7 @@ def record_audio():
     if not os.path.exists(recordings_folder):
         os.makedirs(recordings_folder)
 
-    print("Press and hold the space bar to start recording. Release to stop.")
+    print("\nPress and hold the space bar to start recording. Release to stop.")
     print("Type 'exit' anytime to stop the program.")
 
     def check_exit():
@@ -37,7 +37,7 @@ def record_audio():
     while exit_thread.is_alive():
         try:
             keyboard.wait('space')  # Wait for spacebar press to start recording
-            sys.stdout.write("Recording started ")
+            sys.stdout.write("Recording started...\n ")
             sys.stdout.flush()
             frames = []
 
@@ -53,7 +53,7 @@ def record_audio():
                     time.sleep(0.1)
 
                 stream.stop()
-            print("\rRecording stopped.          ")  # Clear the spinner
+            print("\rRecording stopped.")  # Clear the spinner
 
             # Save the recording
             audio_data = np.concatenate(frames, axis=0)
