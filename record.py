@@ -1,3 +1,4 @@
+import os
 import sounddevice as sd
 import numpy as np
 import keyboard
@@ -8,7 +9,11 @@ import threading
 import sys
 
 def record_audio():
-    print("\nPress and hold the space bar to start recording. Release to stop.")
+    recordings_folder = "recordings"
+    if not os.path.exists(recordings_folder):
+        os.makedirs(recordings_folder)
+
+    print("Press and hold the space bar to start recording. Release to stop.")
     print("Type 'exit' anytime to stop the program.")
 
     def check_exit():
@@ -32,7 +37,7 @@ def record_audio():
     while exit_thread.is_alive():
         try:
             keyboard.wait('space')  # Wait for spacebar press to start recording
-            sys.stdout.write("Recording started... \n")
+            sys.stdout.write("Recording started ")
             sys.stdout.flush()
             frames = []
 
@@ -48,12 +53,12 @@ def record_audio():
                     time.sleep(0.1)
 
                 stream.stop()
-            print("\rRecording stopped... ")  # Clear the spinner
+            print("\rRecording stopped.          ")  # Clear the spinner
 
             # Save the recording
             audio_data = np.concatenate(frames, axis=0)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_file = f"recorded_{timestamp}.wav"
+            output_file = os.path.join(recordings_folder, f"recorded_{timestamp}.wav")
             write_wav(output_file, audio_data, 44100)
             print(f"Audio recording saved as {output_file}")
 
