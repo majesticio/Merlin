@@ -1,2 +1,5 @@
 sounddevice
+numpy
 keyboard
+python-dotenv
+pyloudnorm
