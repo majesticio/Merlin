@@ -9,7 +9,7 @@
 - `python transcriber.py`
 - `python speaker.py`
 - `python responder.py`
-- `sudo pythom recorder.py`
+- `sudo python recorder.py`
 
 ## Use recorder
 - `sudo python recorder.py`

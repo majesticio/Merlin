@@ -4,8 +4,11 @@ import os
 import time
 from datetime import datetime
 
-API_URL = "http://localhost:11434/api/chat"
-MODEL_NAME = "dolphin-mixtral"  # Replace with your model name
+# API configuration
+API_URL = "http://localhost:1234/v1/chat/completions"
+HEADERS = {"Content-Type": "application/json"}
+
+# File paths
 HISTORY_FILE = "chat_history.json"
 RESPONSES_DIR = "responses/"
 PROMPTS_DIR = "prompts/"
@@ -36,62 +39,65 @@ def send_chat_request(message):
     messages.append(message)
 
     data = {
-        "model": MODEL_NAME,
         "messages": messages[-20:],  # Send only the last 20 messages
-        # "stream": False  # Set to non-streaming mode
-        "stream": False  # Set to non-streaming mode
-
+        "temperature": 0.7,
+        "max_tokens": -1,
+        "stream": False
     }
 
-    response = requests.post(API_URL, json=data)
+    response = requests.post(API_URL, headers=HEADERS, json=data)
 
     try:
         response_json = response.json()
-        if 'message' in response_json and response_json['message']['role'] == 'assistant':
-            messages.append(response_json["message"])
-            full_response_content = response_json["message"]["content"]
-            print("Merlin:", full_response_content)
-            save_response(full_response_content)
-            return full_response_content
+        if response.status_code == 200 and 'choices' in response_json:
+            assistant_message = response_json['choices'][0]['message']['content']
+            messages.append({"role": "assistant", "content": assistant_message})
+            print("Merlin:", assistant_message)
+            save_response(assistant_message)
+            return assistant_message
+        else:
+            print("Error:", response.status_code, response.text)
+            return None
     except json.JSONDecodeError as e:
-        print("JSON decoding failed: ", e)
-        print("Raw response: ", response.text)
+        print("JSON decoding failed:", e)
+        print("Raw response:", response.text)
         return None
 
 def get_oldest_prompt_file(directory):
-    """Gets the oldest file in the specified directory based on the filename timestamp."""
+    """Gets the oldest file in the specified directory."""
     files = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.txt')]
     if not files:
         return None
     return min(files, key=os.path.getctime)
 
 def voice_mode():
-    """Process the oldest text files in the prompts directory and send them to chat."""
+    """Processes text files in the prompts directory as chat input."""
     print("Entering voice mode... Type 'q' to exit.")
     while True:
         prompt_file = get_oldest_prompt_file(PROMPTS_DIR)
-        while prompt_file:
+        if prompt_file:
             with open(prompt_file, 'r') as file:
-                prompt_text = file.read()
+                prompt_text = file.read().strip()
+            print("Processing:", prompt_text)
             send_chat_request({"role": "user", "content": prompt_text})
-            os.remove(prompt_file)  # Remove the file after processing
+            os.remove(prompt_file)
             prompt_file = get_oldest_prompt_file(PROMPTS_DIR)
-
-        # print("No prompts found. Waiting for new files...")
-        time.sleep(1)  # Wait for 1 second before checking again
+        else:
+            time.sleep(1)  # Wait before checking for new files
 
 # Load chat history
 messages = load_chat_history()
 
-# Chat loop
+# Main loop for voice mode
 while True:
-    # user_input = input("You: ")
-    # if user_input.lower() == '/voice':
-    voice_mode()
-    # elif user_input.lower() in ['exit', 'quit']:
-    #     print("Exiting chat.")
-    #     save_chat_history(messages)
-    #     break
-    # else:
-    #     user_message = {"role": "user", "content": user_input}
-    #     send_chat_request(user_message)
+
+    user_input = input("You: ")
+    if user_input.lower() == '/voice':
+        voice_mode()
+    elif user_input.lower() in ['exit', 'quit']:
+        print("Exiting chat.")
+        save_chat_history(messages)
+        break
+    else:
+        user_message = {"role": "user", "content": user_input}
+        send_chat_request(user_message)
