@@ -99,7 +99,7 @@ class AudioRecorder:
         """Saves the recorded audio to a file."""
         audio_data = np.concatenate(self.frames, axis=0)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = os.path.join(self.recordings_folder, f"recorded_{timestamp}.wav")
+        output_file = os.path.join(self.recordings_folder, f"{timestamp}.wav")
 
         try:
             normalized_data = self.normalizer.normalize(audio_data)
