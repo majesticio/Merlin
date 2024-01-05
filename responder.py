@@ -38,7 +38,9 @@ def send_chat_request(message):
     data = {
         "model": MODEL_NAME,
         "messages": messages[-20:],  # Send only the last 20 messages
+        # "stream": False  # Set to non-streaming mode
         "stream": False  # Set to non-streaming mode
+
     }
 
     response = requests.post(API_URL, json=data)
@@ -83,13 +85,13 @@ messages = load_chat_history()
 
 # Chat loop
 while True:
-    user_input = input("You: ")
-    if user_input.lower() == '/voice':
-        voice_mode()
-    elif user_input.lower() in ['exit', 'quit']:
-        print("Exiting chat.")
-        save_chat_history(messages)
-        break
-    else:
-        user_message = {"role": "user", "content": user_input}
-        send_chat_request(user_message)
+    # user_input = input("You: ")
+    # if user_input.lower() == '/voice':
+    voice_mode()
+    # elif user_input.lower() in ['exit', 'quit']:
+    #     print("Exiting chat.")
+    #     save_chat_history(messages)
+    #     break
+    # else:
+    #     user_message = {"role": "user", "content": user_input}
+    #     send_chat_request(user_message)

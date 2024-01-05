@@ -54,7 +54,7 @@ while True:
 
             continue
         else:
-            print("No recordings found. Waiting for new files...")
+            # print("No recordings found. Waiting for new files...")
             time.sleep(1)
     except KeyboardInterrupt:
         print("\nExiting program...")
