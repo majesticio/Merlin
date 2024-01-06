@@ -2,3 +2,5 @@ recordings
 Pipfile
 prompts
 responses
+chat_history.json
+chat_history.json.jailbreak
