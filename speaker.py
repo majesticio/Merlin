@@ -11,7 +11,8 @@ import torch
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Define the model path
-MODEL_NAME = "tts_models/en/jenny/jenny"
+#MODEL_NAME = "tts_models/en/jenny/jenny"
+MODEL_NAME = "tts_models/en/vctk/vits"
 # Set base directory for the wave files
 WAV_DIR = "../speaker/"
 # Set the responses directory
@@ -28,7 +29,9 @@ def speak(text, out_path):
     """
     Synthesize speech from the given text using the specified TTS model and play it.
     """
-    tts_engine.tts_to_file(text=text, file_path=out_path)
+    tts_engine.tts_to_file(text=text, file_path=out_path, speaker="p230")
+    
+    
     audio = AudioSegment.from_wav(out_path)
     play(audio)
     os.remove(out_path)  # Remove the WAV file after playing
